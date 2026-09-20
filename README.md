@@ -6,21 +6,12 @@ screenshots, screen recordings and Xcode build leftovers — and moves them to t
 It is deliberately boring: it never deletes anything, it never phones home, and it only
 looks in a handful of folders you already know about.
 
-```
-🧹 Mac Cleaner — scanning…
+| One click to see what's recoverable | A second click to confirm |
+| --- | --- |
+| ![The Mac Cleaner popover, listing Screenshots, Screen Recordings and Xcode with item counts and sizes](docs/menu-bar.png) | !["Clean" has turned into "Trash 10?" — nothing moves until you click again](docs/confirm.png) |
 
-📸 Screenshots
-   214 items, 1.1 GB
-
-🎥 Screen Recordings
-   18 items, 4.3 GB
-
-🛠 Xcode
-   9 items, 22.7 GB
-
-──────────────────
-Recoverable: 28.1 GB
-```
+It lives in the menu bar: no Dock icon, no window, no launch screen. Click the ✨, read
+three numbers, decide.
 
 ## The problem
 
@@ -178,6 +169,22 @@ cleaner scan [--older-than N]
 cleaner clean <screenshots|recordings|xcode> [--older-than N] [--yes]
 ```
 
+```
+🧹 Mac Cleaner — scanning…
+
+📸 Screenshots
+   214 items, 1.1 GB
+
+🎥 Screen Recordings
+   18 items, 4.3 GB
+
+🛠 Xcode
+   9 items, 22.7 GB
+
+──────────────────
+Recoverable: 28.1 GB
+```
+
 ## Stack
 
 - **Swift 6** with strict concurrency — `Sendable` value types across the board, so the
@@ -235,6 +242,7 @@ Tests/CleanerKitTests/
 scripts/
   build-app.sh             .app bundle + Info.plist + icon + signing
   make-icon.swift          draws the app icon
+docs/                      README screenshots
 ```
 
 ## Where it's going
