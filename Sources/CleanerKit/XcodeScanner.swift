@@ -5,6 +5,11 @@ import Foundation
 public struct XcodeScanner: StorageScanner {
     public let name = "Xcode"
 
+    /// Unlike DerivedData, an `.xcarchive` is not regenerable: it holds the dSYM for
+    /// one specific build UUID, and rebuilding the same source produces a new UUID.
+    /// Archives are therefore only offered once untouched this long.
+    static let archiveMinimumAgeDays = 30
+
     private let developerDirectory: URL
 
     // FileManager isn't Sendable, so we don't store one — each method uses
@@ -14,11 +19,18 @@ public struct XcodeScanner: StorageScanner {
             .appending(path: "Library/Developer/Xcode")
     }
 
+    /// Scans a fixture directory instead of the real `~/Library/Developer/Xcode`.
+    init(developerDirectory: URL) {
+        self.developerDirectory = developerDirectory
+    }
+
     public func scan() throws -> ScanResult {
-        var items: [FileItem] = []
-        items.append(contentsOf: children(of: developerDirectory.appending(path: "DerivedData")))
-        items.append(contentsOf: children(of: developerDirectory.appending(path: "Archives"), recurseOneLevel: true))
-        return ScanResult(scannerName: name, items: items)
+        let derivedData = children(of: developerDirectory.appending(path: "DerivedData"))
+        let archives = ScanResult(
+            scannerName: name,
+            items: children(of: developerDirectory.appending(path: "Archives"), recurseOneLevel: true)
+        ).filtered(untouchedForDays: Self.archiveMinimumAgeDays)
+        return ScanResult(scannerName: name, items: derivedData + archives.items)
     }
 
     /// Each immediate child directory becomes one item, sized by walking its contents.
