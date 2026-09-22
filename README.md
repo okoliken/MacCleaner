@@ -77,7 +77,7 @@ Three scanners ship today:
 | --- | --- | --- |
 | `ScreenshotScanner` | screenshot save location + `~/Downloads` | image captures |
 | `ScreenRecordingScanner` | the same folders | video captures |
-| `XcodeScanner` | `~/Library/Developer/Xcode` | `DerivedData` folders, `Archives` |
+| `XcodeScanner` | `~/Library/Developer/Xcode` | `DerivedData` folders, `Archives` untouched for 30+ days |
 
 **Finding screenshots** is more interesting than matching `Screenshot*.png`. macOS tags
 every capture it makes with an extended attribute — a small named tag stored on the file
@@ -105,8 +105,10 @@ Two deliberate limits keep this conservative:
 
 **Finding Xcode junk** is a directory walk: each child of `DerivedData` becomes one item,
 sized by summing its contents; `Archives` nests one level deeper
-(`Archives/<date>/<name>.xcarchive`) so it recurses once. All of it is regenerable —
-Xcode rebuilds `DerivedData` on the next build.
+(`Archives/<date>/<name>.xcarchive`) so it recurses once. The two are not equivalent:
+`DerivedData` is regenerable — Xcode rebuilds it on the next build — but an `.xcarchive`
+holds the dSYM for one specific build UUID, and rebuilding the same source produces a
+new UUID, not the old one. So archives are only offered once untouched for 30+ days.
 
 ### Age filtering
 
